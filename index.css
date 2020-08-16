@@ -1,10 +1,13 @@
 body {
 	width: 550px;
 	height: 550px;
+	background: rgb(89,82,125);
+    background: linear-gradient(0deg, rgba(89,82,125,1) 0%, rgba(114,138,176,1) 100%);
 }
 
 p {
-	font-family: Garamond;
+	font-family: Helvetica;
+	color: GhostWhite;
 	font-weight: lighter;
 	box-sizing: border-box;
 }
@@ -15,7 +18,7 @@ p#categoryP {
 	left: 15%;
 	top: 0;
 	font-size: 1.5em;
-	border-bottom: 1px solid black;
+	border-bottom: 1px solid GhostWhite;
 }
 
 p#alternativesP {
@@ -58,25 +61,25 @@ div.alternativeDiv {
 	height: 20%;
 	width: 90%;
 	margin-left: 5%;
-	border: 1px solid black;
+	border: 8px solid GhostWhite;
 	opacity: 0;
 	margin-bottom: 1em;
 	transition: opacity 0.5s ease-in-out, background 0.5s ease-in-out;
 	box-sizing: border-box;
 	cursor: pointer;
+    background: linear-gradient(90deg, rgba(131,58,180,1) 0%, rgba(253,29,29,1) 50%, rgba(252,176,69,1) 100%);
 }
 
 div.separator {
 	height: 1px;
 	width: 80%;
-	background: black;
 	transition: background 0.5s ease-in-out;
 }
 
 div.alternativeDiv p {
 	margin: 0;
 	padding: 0;
-	color: black;
+	color: GhostWhite;
 	transition: color 0.5s ease-in-out;
 }
 
