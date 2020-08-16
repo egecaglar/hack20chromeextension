@@ -1,0 +1,11 @@
+{
+"manifest_version": 2,
+
+  "name": "hack20",
+  "description": "This extension will suggest black-owned alternatives to Amazon products.",
+  "version": "1.0",
+
+  "browser_action": {
+   "default_popup": "hack20.html"
+  }
+}
