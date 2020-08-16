@@ -1,7 +1,8 @@
+// This code is running on AWS Lambda and deployed through Amazon API Gateway 
 const AWS = require('aws-sdk');
 const table = "BlackOwnedBusinesses";
 const axios = require('axios');
-const api_key = "E2EA029907304CE692BA8CCA70B8BCF4";
+const api_key = "3AB54C5FDB7847EF9095C512A220B8AC";
 
 const dynamoDb = new AWS.DynamoDB.DocumentClient({
   region: "us-west-2"
