@@ -74,6 +74,7 @@ div.separator {
 	height: 1px;
 	width: 80%;
 	transition: background 0.5s ease-in-out;
+	background: white;
 }
 
 div.alternativeDiv p {
@@ -112,7 +113,9 @@ p.alternativeBusinessNameP {
 
 p.alternativeDescriptionP {
 	width: 100%;
-	height: 60%;
+	height: 50%;
+	position: relative;
+	top: 10%;
 }
 
 .hidden, div.alternativeDiv {
