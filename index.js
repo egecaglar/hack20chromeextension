@@ -7,9 +7,43 @@ var modelAlternativeDiv = document.getElementsByClassName("alternativeDiv")[0];
 modelAlternativeDiv.transitionMS = 1000;
 transitionAlternatives.transitionMS = modelAlternativeDiv.transitionMS / 2;
 
-setCategory("shoes");
 adjustPage();
-hardcodeparseArray();
+monitorActiveTab();
+
+loadingIntervalFunction.count = 0;
+function loadingIntervalFunction() {
+	(loadingIntervalFunction.count)++;
+	var numDots = (loadingIntervalFunction.count % 4);
+	var loadingText = "";
+	
+	for(var i = 0; i < numDots; i++)
+		loadingText += ".";
+	
+	categorySpan.innerHTML = loadingText;
+}
+
+var loadingInterval = setInterval(loadingIntervalFunction, 250);
+
+var checkActiveTab = function(tab) {
+    var tabUrl = tab.url;
+	if(tabUrl === checkActiveTab.previousTabUrl)
+		return;
+    var amazonSearchPattern = "%amazon.com/%/dp/%";
+    var isSearchingAmazon = patternMatch(amazonSearchPattern, tabUrl);
+    
+    if(isSearchingAmazon)
+        addAlternatives(tabUrl);
+	
+	checkActiveTab.previousTabUrl = tabUrl;
+}
+
+function monitorActiveTab() {
+    var intervalMS = 1000;
+    
+    var interval = setInterval(function() {
+        chrome.tabs.getSelected(null, checkActiveTab);
+    }, intervalMS);
+}
 
 function transitionAlternatives() {
 	var alternativeDivs = alternativesDiv.querySelectorAll(".alternativeDiv");
@@ -28,6 +62,8 @@ function transitionAlternatives() {
 }
 
 function setCategory(category) {	
+	clearInterval(loadingInterval);	
+	loadingIntervalFunction.count = 0;
 	categorySpan.innerHTML = category;
 }
 
@@ -48,7 +84,7 @@ function removePx(text) {
 	return value;
 }
 
-function addAlternative(url, imageSource, title, description) {
+function addAlternative(url, imageSource, businessName, description) {
 	var alternativeDiv = getAlternativeDiv();
 	var image = alternativeDiv.querySelectorAll(".alternativeImage")[0];
 	var businessNameP = alternativeDiv.querySelectorAll(".alternativeBusinessNameP")[0];
@@ -57,7 +93,7 @@ function addAlternative(url, imageSource, title, description) {
 	
 	anchor.href = url;
 	image.src = imageSource;
-	businessNameP.innerHTML = title;
+	businessNameP.innerHTML = businessName;
 	descriptionP.innerHTML = description;
 	
 	alternativesDiv.appendChild(alternativeDiv);
@@ -76,14 +112,15 @@ function getAlternativeDiv() {
 	alternativeDiv.onmouseenter = function() {
 		businessNameP.style.color = "white";
 		descriptionP.style.color = "white";
-		alternativeDiv.style.background = "black";
+		alternativeDiv.style.background = "linear-gradient(90deg, rgba(58,114,180,1) 0%, rgba(81,167,155,1) 50%, rgba(252,176,69,1) 100%)";
 		separator.style.background = "white";
+		
 	}
 	
 	alternativeDiv.onmouseleave = function() {
-		businessNameP.style.color = "black";
-		descriptionP.style.color = "black";
-		alternativeDiv.style.background = "white";
+		businessNameP.style.color = "white";
+		descriptionP.style.color = "white";
+		alternativeDiv.style.background = "linear-gradient(90deg, rgba(131,58,180,1) 0%, rgba(253,29,29,1) 50%, rgba(252,176,69,1) 100%)";
 		separator.style.background = "black";
 	}
 	
@@ -91,18 +128,64 @@ function getAlternativeDiv() {
 }
 
 //fetchData().then(arr => console.log(arr));
-function parseArray() {
+function addAlternatives(amazonUrl) {
+    var baseUrl = "https://jw2wgnn6xh.execute-api.us-west-2.amazonaws.com/test/businesses?url=";
+    var url = baseUrl + amazonUrl;
+  
 	fetch(url)
-	.then((resp) => resp.json()) // Transform the data into json
+	.then(	(resp) => resp.json()) // Transform the data into json
 	.then(function(data) {
-		for (var i = 0; i < data.length; i++) {
-			var obj = data[key];
-			var im = alert(obj.image);
-			var t = alert(obj.title);
-			var d = alert(obj.description);
-			addAlternative(im, t, d);
-		}
+		var alternatives = data;
+		var categoryBuilder = "";
+		var numAlternatives = alternatives.length;
+	    for(var i = 0; i < numAlternatives; i++) {
+    		var alternative = alternatives[i];
+			alternative = JSON.parse(alternative);
+    		var item = alternative.Item;
+    		var category = item.category;
+			
+			categoryBuilder += category + ((i < numAlternatives - 1) ? ", " : "");
+    		addAlternative(item.url, item.imageUrl, item.businessName, item.description);
+	    }
+	
+		setCategory(categoryBuilder);
+	    transitionAlternatives();
 	});
+}
+
+function getCurrentTab() {
+    var currentTab;
+    
+    chrome.tabs.getCurrent(function(tab) {
+        currentTab = tab.url;
+    });
+    
+    return currentTab;
+}
+
+
+function patternMatch(pattern, string) {
+	var matches = true;
+	var stringLen = string.length;
+	var betweens = pattern.split("%");
+	var previousIndex;
+	var currentIndex;
+	var numBetweens = betweens.length;
+
+	previousIndex = -1;
+	for(var i = 0; i < numBetweens && matches; i++) {
+		var between = betweens[i];
+		if(between != "") {
+			currentIndex = string.indexOf(between);
+			if(currentIndex <= previousIndex)
+				matches = false;
+		}
+		previousIndex = currentIndex;
+	}
+
+
+
+	return matches;
 }
 
 function hardcodeparseArray() {
