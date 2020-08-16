@@ -9,18 +9,7 @@ transitionAlternatives.transitionMS = modelAlternativeDiv.transitionMS / 2;
 
 setCategory("shoes");
 adjustPage();
-testAddAlternative();
-
-function testAddAlternative() {
-	var numAlternatives = 10;
-	
-	for(var i = 0; i < numAlternatives; i++) {
-		addAlternative("https://www.snailmail.band/", "images/testImage.png", "Title " + (i + 1), "description " + (i + 1));
-	}
-	
-	transitionAlternatives();
-	
-}
+hardcodeparseArray();
 
 function transitionAlternatives() {
 	var alternativeDivs = alternativesDiv.querySelectorAll(".alternativeDiv");
@@ -62,41 +51,40 @@ function removePx(text) {
 function addAlternative(url, imageSource, title, description) {
 	var alternativeDiv = getAlternativeDiv();
 	var image = alternativeDiv.querySelectorAll(".alternativeImage")[0];
-	var titleP = alternativeDiv.querySelectorAll(".alternativeTitleP")[0];
+	var businessNameP = alternativeDiv.querySelectorAll(".alternativeBusinessNameP")[0];
 	var descriptionP = alternativeDiv.querySelectorAll(".alternativeDescriptionP")[0];
-	var alternativeAnchor = alternativeDiv.querySelectorAll(".alternativeAnchor")[0];
+	var anchor = alternativeDiv.querySelectorAll(".alternativeAnchor")[0];
 	
-	alternativeAnchor.href = url;
+	anchor.href = url;
 	image.src = imageSource;
-	titleP.innerHTML = title;
+	businessNameP.innerHTML = title;
 	descriptionP.innerHTML = description;
 	
 	alternativesDiv.appendChild(alternativeDiv);
-	verticalAlign(titleP);
+	verticalAlign(businessNameP);
 }
 
 function getAlternativeDiv() {
 	var alternativeDiv = modelAlternativeDiv.cloneNode(true);
-	var ps = alternativeDiv.querySelectorAll("p");
-	var numPs = ps.length;
+	var businessNameP = alternativeDiv.querySelectorAll(".alternativeBusinessNameP")[0];
+	var descriptionP = alternativeDiv.querySelectorAll(".alternativeDescriptionP")[0];
+	var separator = alternativeDiv.querySelectorAll(".separator")[0];
 	
 	alternativeDiv.style.visibility = "visible";
 	alternativeDiv.style.position = "static";
 	
 	alternativeDiv.onmouseenter = function() {
-		for(var i = 0; i < numPs; i++) {
-			var p = ps[i];
-			p.style.color = "white";
-		}		
+		businessNameP.style.color = "white";
+		descriptionP.style.color = "white";
 		alternativeDiv.style.background = "black";
+		separator.style.background = "white";
 	}
 	
 	alternativeDiv.onmouseleave = function() {
-		for(var i = 0; i < numPs; i++) {
-			var p = ps[i];
-			p.style.color = "black";
-		}
+		businessNameP.style.color = "black";
+		descriptionP.style.color = "black";
 		alternativeDiv.style.background = "white";
+		separator.style.background = "black";
 	}
 	
 	return alternativeDiv;
@@ -119,23 +107,23 @@ function parseArray() {
 
 function hardcodeparseArray() {
 
-	var json = [{"businessName": "Sephora", "title": "mascara", "image": "sample"},
-	{"businessName": "QFC", "title": "chicken", "image": "sample3"},
-	{"businessName": "Payless Shoesource", "title": "shoes", "image": "sample2"}];
+	var alternatives = [{"url": "https://www.snailmail.band/", "imageUrl": "https://images1.miaminewtimes.com/imager/u/745xauto/9417877/music1-1-1b7621cc28cde0e7.jpg", "businessName": "Sephora", "description": "mascara"},
+	{"url": "https://www.snailmail.band/", "imageUrl": "https://images1.miaminewtimes.com/imager/u/745xauto/9417877/music1-1-1b7621cc28cde0e7.jpg", "businessName": "QFC", "description": "chicken"},
+	{"url": "https://www.snailmail.band/", "imageUrl": "https://images1.miaminewtimes.com/imager/u/745xauto/9417877/music1-1-1b7621cc28cde0e7.jpg", "businessName": "Payless Shoesource", "description": "shoes"}];
+	var numAlternatives = alternatives.length;
 
-	 for (var i = 0; i < json.length; i++) {
-			  alert(json[i].businessName);
-			  //(json[key].title);
-			  var obj = json[i];
-			  var n = obj.businessName;
-			  var t = obj.title;
-			  var im = obj.image;
-			  addAlternative(im, n, t);
-	 }
+	for(var i = 0; i < numAlternatives; i++) {
+		var alternative = alternatives[i];
+		
+		addAlternative(alternative.url, alternative.imageUrl, alternative.businessName, alternative.description);
+	}
+	
+	transitionAlternatives();
 
-postData('https://example.com/answer', { answer: 42 })
-  .then(data => {
-    console.log(data); // JSON data parsed by `data.json()` call
-  });
+
+	/*postData('https://example.com/answer', { answer: 42 })
+		.then(data => {
+		console.log(data); // JSON data parsed by `data.json()` call
+	});*/
 
 }
