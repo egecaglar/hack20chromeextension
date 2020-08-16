@@ -104,7 +104,6 @@ function getAlternativeDiv() {
 	var alternativeDiv = modelAlternativeDiv.cloneNode(true);
 	var businessNameP = alternativeDiv.querySelectorAll(".alternativeBusinessNameP")[0];
 	var descriptionP = alternativeDiv.querySelectorAll(".alternativeDescriptionP")[0];
-	var separator = alternativeDiv.querySelectorAll(".separator")[0];
 	
 	alternativeDiv.style.visibility = "visible";
 	alternativeDiv.style.position = "static";
@@ -112,16 +111,13 @@ function getAlternativeDiv() {
 	alternativeDiv.onmouseenter = function() {
 		businessNameP.style.color = "white";
 		descriptionP.style.color = "white";
-		alternativeDiv.style.background = "linear-gradient(90deg, rgba(58,114,180,1) 0%, rgba(81,167,155,1) 50%, rgba(252,176,69,1) 100%)";
-		separator.style.background = "white";
-		
+		alternativeDiv.style.background = "linear-gradient(90deg, rgba(58,114,180,1) 0%, rgba(81,167,155,1) 50%, rgba(252,176,69,1) 100%)";		
 	}
 	
 	alternativeDiv.onmouseleave = function() {
 		businessNameP.style.color = "white";
 		descriptionP.style.color = "white";
 		alternativeDiv.style.background = "linear-gradient(90deg, rgba(131,58,180,1) 0%, rgba(253,29,29,1) 50%, rgba(252,176,69,1) 100%)";
-		separator.style.background = "black";
 	}
 	
 	return alternativeDiv;
