@@ -1,49 +1,64 @@
+const AWS = require('aws-sdk');
+const table = "BlackOwnedBusinesses";
 const axios = require('axios');
+const api_key = "E2EA029907304CE692BA8CCA70B8BCF4";
 
-function getProductInfo(api_key, url_input) {
+const dynamoDb = new AWS.DynamoDB.DocumentClient({
+  region: "us-west-2"
+});
+
+async function getProductInfo(api_key, url_input) {
     const params = {
         api_key: api_key,
         type: "product",
         url: url_input
     };
-    return axios.get('https://api.rainforestapi.com/request', { params })
-      .then(response => {
-        product = response.data.product;
-        var allWords = [];
-        allWords.push(product.title);
-        for(item of product.categories) {
-          allWords.push(item.name);
-        }
-        return allWords;
-      })
-      .catch(function (error) {
+    let response = await axios.get('https://api.rainforestapi.com/request', { params })
+    .catch(function (error) {
         console.log(error);
         return Promise.reject(error);
-      });
+    });
+    let product = response.data.product;
+    var words = [];
+    words.push(product.title);
+    for(let item of product.categories) {
+      words.push(item.name);
+    }
+    return words;
 };
 
-getProductInfo(api_key="E2EA029907304CE692BA8CCA70B8BCF4", url_input="https://www.amazon.com/Sony-Alpha-a6400-Mirrorless-Camera/dp/B07MV3P7M8/ref=sr_1_2?dchild=1&qid=1597524826&s=electronics&sr=1-2").then(allWords => {
-  // Do anything you want here - probably search the DB for each word!
-  console.log(allWords)
-  /*
-  Try not to run this too many times, i have only 90 trials left. If you need more, you can open up an account and replace the api_key with yours.
-  This code returned the following output:
-  [
-    'Sony Alpha a6400 Mirrorless Camera: Compact AP
-  S-C Interchangeable Lens Digital Camera with Real
-  -Time Eye Auto Focus, 4K Video, Flip Screen & 16-
-  50mm Lens - E Mount Compatible Cameras - ILCE-640
-  0L/B',
-    'Electronics',
-    'Electronics',
-    'Camera & Photo',
-    'Digital Cameras',
-    'Mirrorless Cameras'
-  ]
-
-  You might want to discard the title (first entry in the array) when searching the DB.
-  */
-});
-
-// To learn more about promises:
-// https://web.dev/promises/
+exports.handler = async (event) => {
+    const url = event.queryStringParameters.url;
+    var results = [];
+    var allWords = await getProductInfo(api_key, url);
+    
+    let i;
+    for(i = 1 ; i < allWords.length ; i++){
+        var params = {
+        TableName : table,
+            Key: {
+                "category" : allWords[i]
+            }
+        };
+        
+        const data = await dynamoDb.get(params).promise();
+           if(!(Object.entries(data).length === 0)){
+                results.push(JSON.stringify(data));
+            } 
+    }
+    
+    const response = {
+        isBase64Encoded: false,
+        headers: {"Content-Type": "application/json", "Access-Control-Allow-Origin" : "*"}
+    };
+    
+    if(results.length > 0){
+        response.statusCode = 200;
+        response.body = JSON.stringify(Array.from(new Set(results)));
+    }
+    else{
+        response.statusCode = 500;
+    }
+    return response;
+    
+};
